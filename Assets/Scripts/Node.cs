@@ -12,7 +12,7 @@ public class Node : MonoBehaviour
     public Color Color = Color.white;
 
     // Link, Node, PacketEntryBlocked
-    List<(Link, Node, bool)> NeighboorNodes = new List<(Link, Node, bool)>();
+    List<Neighboor> NeighboorNodes = new List<Neighboor>();
 
     DrawingNode drawable;
     public int ID;
@@ -64,13 +64,13 @@ public class Node : MonoBehaviour
                     PacketsHistory.Add((GameManager.TimeSinceStart, packetToTreat, TransfertType.RECEIPT));
                 } else
                 {
-                    (Link, Node, bool) group = NeighboorNodes.FirstOrDefault(e => e.Item2.ID == packetToTreat.GetNextNodeID(ID));
-                    if(group.Item1 != null && group.Item2 != null)
+                    Neighboor group = NeighboorNodes.FirstOrDefault(e => e.Node.ID == packetToTreat.GetNextNodeID(ID));
+                    if(group.Link != null && group.Node != null)
                     {
-                        if(group.Item1.Enabled)
+                        if(group.Link.Enabled)
                         {
                             // Active Link
-                            group.Item2.ReceivePacket(group.Item1.name, packetToTreat);
+                            group.Node.ReceivePacket(group.Link.name, packetToTreat);
                         }
                     } // else the packet die without any other effect
 
@@ -84,7 +84,7 @@ public class Node : MonoBehaviour
 
     public void ReceivePacket(string linkName, Packet newPacket)
     {
-        if(!NeighboorNodes.Exists(e => e.Item1.name == linkName && !e.Item3))
+        if(!NeighboorNodes.Exists(e => e.Link.name == linkName && !e.PacketEntryBlocked))
             PacketsToTreat.Add(newPacket);
     }
 
@@ -92,7 +92,7 @@ public class Node : MonoBehaviour
 
     public void TryLinkingToNeighboorNode(Node otherNode, GameObject parentLink, float distanceMax)
     {
-        if(!NeighboorNodes.Exists(x => x.Item2.ID == otherNode.ID))
+        if(!NeighboorNodes.Exists(x => x.Node.ID == otherNode.ID))
         {
             Vector2 ourPosition = transform.position;
             Vector2 theirPosition = otherNode.transform.position;
@@ -105,18 +105,35 @@ public class Node : MonoBehaviour
                 link.node1 = this;
                 link.node2 = otherNode;
 
-                NeighboorNodes.Add((link, otherNode, true));
-                otherNode.NeighboorNodes.Add((link, this, true));
+                NeighboorNodes.Add(new Neighboor(link, otherNode));
+                otherNode.NeighboorNodes.Add(new Neighboor(link, this));
             }
         }
     }
+
+    #region Neighboor class
+
+    public class Neighboor
+    {
+        public Link Link;
+        public Node Node;
+        public bool PacketEntryBlocked;
+
+        public Neighboor(Link aLink, Node anode, bool firewallBlocked = false)
+        {
+            Link = aLink; Node = anode; PacketEntryBlocked = firewallBlocked;
+        }
+    }
+
+    #endregion
+
 
     #region Update Visuals for node changes
 
     void UpdateVisualNeighboorLines()
     {
         for(int i = 0; i < NeighboorNodes.Count; i++)
-            NeighboorNodes[i].Item1.UpdateVisuals();
+            NeighboorNodes[i].Link.UpdateVisuals();
     }
     void UpdateVisuals()
     {
