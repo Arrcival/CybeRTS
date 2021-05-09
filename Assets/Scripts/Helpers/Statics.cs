@@ -1,3 +1,4 @@
+using Assets.Scripts.Managers;
 using UnityEngine;
 
 namespace Assets.Scripts.Helpers
@@ -7,10 +8,12 @@ namespace Assets.Scripts.Helpers
         public static readonly GameObject LineGameObject = Resources.Load("NodeLink") as GameObject;
 
         public static readonly int DEFAULT_CORES = 2;
-        public static readonly int MAX_CORES = 2;
+        public static readonly int MAX_CORES = 8;
         public static readonly float DEFAULT_CPU_SPEED = 1f;
 
         public static PlayerData ClientPlayer;
+
+        public static UIManager UIManager;
 
         public static Vector2 RadianToVector2(float radian)
         {

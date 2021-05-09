@@ -27,7 +27,7 @@ namespace Assets.Scripts
 
         [ReadOnly] public bool IsSelectedNode = false;
 
-        private Cores.Cores _Cores;
+        public Cores.Cores Cores;
 
         public float FinalRadius
         {
@@ -43,7 +43,14 @@ namespace Assets.Scripts
         void Start()
         {
             _Drawable = GetComponent<DrawingNode>();
-            _Cores = new Cores.Cores(this);
+            Cores = new Cores.Cores(this);
+
+
+            // DEBUGGING
+            if(ID == 0)
+                for (int i = 0; i < 100; i++)
+                    PacketsToTreat.Add(new DDoSPacket(new List<Node> { this, _NeighborNodes[0].Node }));
+            
         }
 
         // Update is called once per frame
@@ -55,7 +62,8 @@ namespace Assets.Scripts
                 transform.hasChanged = false;
             }
 
-            if(PacketsToTreat.Count > 0)
+            #region Treating Packets
+            if (PacketsToTreat.Count > 0)
             {
                 Packet packetToTreat = PacketsToTreat[0]; // Always the first one
                 _CurrentWorkingTime += Time.deltaTime;
@@ -65,11 +73,11 @@ namespace Assets.Scripts
                     if (packetToTreat.EndingNode.ID == ID)
                     {
                         packetToTreat.OnReceipt();
-                        PacketsHistory.Add((GameManager.TimeSinceStart, packetToTreat, TransferType.RECEIVED));
+                        LogPacket(packetToTreat, TransferType.RECEIVED);
                     } else
                     {
                         Neighbor group = _NeighborNodes.FirstOrDefault(e => e.Node.ID == packetToTreat.GetNextNodeID(ID));
-                        if(group.Link != null && group.Node != null)
+                        if(group != null)
                         {
                             if(group.Link.Enabled)
                             {
@@ -78,20 +86,37 @@ namespace Assets.Scripts
                             }
                         } // else the packet die without any other effect
 
-                        PacketsHistory.Add((GameManager.TimeSinceStart, packetToTreat, TransferType.TRANSFER));
+                        if (packetToTreat.StartingNode.ID == ID)
+                            LogPacket(packetToTreat, TransferType.SENT);
+                        else
+                            LogPacket(packetToTreat, TransferType.TRANSFER);
                     }
 
                     _CurrentWorkingTime -= 1 / PacketsPerSecond;
                 }
             }
+            #endregion
+
+
         }
 
         public void ReceivePacket(string linkName, Packet newPacket)
         {
-            if(!_NeighborNodes.Exists(e => e.Link.name == linkName && !e.PacketEntryBlocked))
+            if(_NeighborNodes.Exists(e => e.Link.name == linkName && !e.PacketEntryBlocked))
+            {
                 PacketsToTreat.Add(newPacket);
+            }
         }
 
+        public void LogPacket(Packet packet, TransferType type)
+        {
+            PacketsHistory.Add((GameManager.TimeSinceStart, packet, type));
+            if(IsSelectedNode)
+            {
+                // Update UI !
+                Statics.UIManager.UpdatePacketHistory();
+            }
+        }
 
 
         public void TryLinkingToNeighborNode(Node otherNode, GameObject parentLink, float distanceMax)

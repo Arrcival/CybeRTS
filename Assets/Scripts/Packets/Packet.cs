@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Assets.Scripts.Packets
 {
@@ -7,6 +8,13 @@ namespace Assets.Scripts.Packets
         public List<Node> Path;
         public Node StartingNode;
         public Node EndingNode;
+
+        public Packet(List<Node> path)
+        {
+            StartingNode = path.First();
+            EndingNode = path.Last();
+            Path = path;
+        }
 
         public Packet(Node startingNode, Node endingNode, List<Node> path)
         {

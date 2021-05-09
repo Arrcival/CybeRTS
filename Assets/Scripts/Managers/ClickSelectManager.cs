@@ -25,6 +25,9 @@ namespace Assets.Scripts.Managers
                 _ClickTime += Time.deltaTime;
             if (Input.GetMouseButtonUp(0) && _ClickTime <= MaxTimeForClick)
                 DoSelection();
+
+            if (Input.GetKeyDown(KeyCode.Escape))
+                _PlayerManager.UnSelectNode();
         }
 
 
@@ -42,8 +45,6 @@ namespace Assets.Scripts.Managers
                 if (node != null)
                     _PlayerManager.SelectNode(node);
             }
-            else
-                _PlayerManager.UnSelectNode();
         }
     }
 }

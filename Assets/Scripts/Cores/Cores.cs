@@ -15,7 +15,7 @@ namespace Assets.Scripts.Cores
             _Node = nodeRef;
             for (int i = 0; i < DEFAULT_CORES; i++)
                 _Cores[i] = new CoreEmpty(nodeRef);
-            for (int i = DEFAULT_CORES; i <= MAX_CORES - DEFAULT_CORES; i++)
+            for (int i = DEFAULT_CORES; i < MAX_CORES; i++)
                 _Cores[i] = new CoreUnavailable(nodeRef);
         }
 
@@ -52,6 +52,11 @@ namespace Assets.Scripts.Cores
             _CoresSpeed += upgradeAmount;
             for (int i = 0; i < _Cores.Length; i++)
                 _Cores[i].SpeedUpgrade(upgradeAmount);
+        }
+
+        public Core[] GetCores()
+        {
+            return _Cores;
         }
     }
 }
