@@ -1,34 +1,35 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class Link : MonoBehaviour
+namespace Assets.Scripts
 {
-    public Node node1;
-    public Node node2;
-
-    public float Width = 1f;
-
-    public bool Enabled = true;
-
-    DrawingLink drawable;
-    private void Start()
+    public class Link : MonoBehaviour
     {
-        transform.position = Vector3.zero;
-        drawable = GetComponent<DrawingLink>();
-        if (drawable != null)
-            drawable.UpdateVisuals();
-    }
+        public Node Node1;
+        public Node Node2;
 
-    private void OnValidate()
-    {
-        if(drawable != null)
-            drawable.UpdateVisuals();
-    }
+        public float Width = 1f;
 
-    public void UpdateVisuals()
-    {
-        drawable.UpdateVisuals();
-    }
+        public bool Enabled = true;
 
+        private DrawingLink _Drawable;
+        private void Start()
+        {
+            transform.position = Vector3.zero;
+            _Drawable = GetComponent<DrawingLink>();
+            if (_Drawable != null)
+                _Drawable.UpdateVisuals();
+        }
+
+        private void OnValidate()
+        {
+            if(_Drawable != null)
+                _Drawable.UpdateVisuals();
+        }
+
+        public void UpdateVisuals()
+        {
+            _Drawable.UpdateVisuals();
+        }
+
+    }
 }

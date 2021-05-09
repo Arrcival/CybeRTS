@@ -1,9 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public interface ILineDrawable
+namespace Assets.Scripts.Interfaces
 {
-    void UpdateVisuals();
+    public interface ILineDrawable
+    {
+        void UpdateVisuals();
+    }
 }
     

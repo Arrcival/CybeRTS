@@ -1,49 +1,49 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(PlayerManager))]
-public class ClickSelectManager : MonoBehaviour
+namespace Assets.Scripts.Managers
 {
-    PlayerManager playerManager;
-
-    public float MaxTimeForClick;
-
-    float clickTime = 0.5f;
-
-    // Start is called before the first frame update
-    void Start()
+    [RequireComponent(typeof(PlayerManager))]
+    public class ClickSelectManager : MonoBehaviour
     {
-        playerManager = GetComponent<PlayerManager>();
-    }
+        private PlayerManager _PlayerManager;
+        private float _ClickTime = 0.5f;
 
-    // Update is called once per frame
-    void Update()
-    {
-        if(Input.GetMouseButtonDown(0))
-            clickTime = 0f;
-        if (Input.GetMouseButton(0))
-            clickTime += Time.deltaTime;
-        if (Input.GetMouseButtonUp(0) && clickTime <= MaxTimeForClick)
-            DoSelection();
-    }
+        public float MaxTimeForClick;
 
-
-
-    void DoSelection()
-    {
-        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector2 mousePos2D = new Vector2(mousePos.x, mousePos.y);
-
-        RaycastHit2D hit = Physics2D.Raycast(mousePos2D, Vector2.zero);
-        if (hit.collider != null)
+        // Start is called before the first frame update
+        void Start()
         {
-            GameObject go = hit.collider.gameObject;
-            Node node = go.GetComponent<Node>();
-            if (node != null)
-                playerManager.SelectNode(node);
+            _PlayerManager = GetComponent<PlayerManager>();
         }
-        else
-            playerManager.UnSelectNode();
+
+        // Update is called once per frame
+        void Update()
+        {
+            if(Input.GetMouseButtonDown(0))
+                _ClickTime = 0f;
+            if (Input.GetMouseButton(0))
+                _ClickTime += Time.deltaTime;
+            if (Input.GetMouseButtonUp(0) && _ClickTime <= MaxTimeForClick)
+                DoSelection();
+        }
+
+
+
+        private void DoSelection()
+        {
+            Vector3 mousePos = UnityEngine.Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 mousePos2D = new Vector2(mousePos.x, mousePos.y);
+
+            RaycastHit2D hit = Physics2D.Raycast(mousePos2D, Vector2.zero);
+            if (hit.collider != null)
+            {
+                GameObject go = hit.collider.gameObject;
+                Node node = go.GetComponent<Node>();
+                if (node != null)
+                    _PlayerManager.SelectNode(node);
+            }
+            else
+                _PlayerManager.UnSelectNode();
+        }
     }
 }

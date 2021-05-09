@@ -1,43 +1,44 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraDrag : MonoBehaviour
+namespace Assets.Scripts.Camera
 {
-    //private Vector3 ResetCamera;
-    private Vector3 Origin;
-    private Vector3 Diference;
-    private bool Drag = false;
-    void Start()
+    public class CameraDrag : MonoBehaviour
     {
-        //ResetCamera = Camera.main.transform.position;
-    }
-    void LateUpdate()
-    {
-        if (Input.GetMouseButton(0))
+        //private Vector3 ResetCamera;
+        private Vector3 _Origin;
+        private Vector3 _Difference;
+        private bool _Drag = false;
+        void Start()
         {
-            Diference = (Camera.main.ScreenToWorldPoint(Input.mousePosition)) - Camera.main.transform.position;
-            if (Drag == false)
+            //ResetCamera = Camera.main.transform.position;
+        }
+        void LateUpdate()
+        {
+            if (Input.GetMouseButton(0))
             {
-                Drag = true;
-                Origin = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                _Difference = (UnityEngine.Camera.main.ScreenToWorldPoint(Input.mousePosition)) - UnityEngine.Camera.main.transform.position;
+                if (_Drag == false)
+                {
+                    _Drag = true;
+                    _Origin = UnityEngine.Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                }
             }
-        }
-        else
-        {
-            Drag = false;
-        }
-        if (Drag == true)
-        {
-            Camera.main.transform.position = Origin - Diference;
-        }
-        /*RESET CAMERA TO STARTING POSITION WITH RIGHT CLICK
+            else
+            {
+                _Drag = false;
+            }
+            if (_Drag == true)
+            {
+                UnityEngine.Camera.main.transform.position = _Origin - _Difference;
+            }
+            /*RESET CAMERA TO STARTING POSITION WITH RIGHT CLICK
         
         if (Input.GetMouseButton(1))
         {
             Camera.main.transform.position = ResetCamera;
         }*/
+        }
+
+
     }
-
-
 }

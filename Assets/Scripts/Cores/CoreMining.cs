@@ -1,84 +1,81 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using static Statics;
+using static Assets.Scripts.Helpers.Statics;
 
-public class CoreMining : Core
+namespace Assets.Scripts.Cores
 {
-    public Currency MinedCurrency;
-    float workedTime;
-    float timeToCompletion { get { return 3 / coreSpeed; } }
-    public CoreMining(Node node, float speed) : base(node)
+    public class CoreMining : Core
     {
-        coreType = CoreType.MINING;
-        coreSpeed = speed;
-    }
+        public Currency MinedCurrency;
+        private float _WorkedTime;
+        public float TimeToCompletion => 3 / CoreSpeed;
 
-    public override void Work(float deltaTime)
-    {
-        workedTime += deltaTime;
-        if(workedTime >= timeToCompletion)
+        public CoreMining(Node node, float speed) : base(node)
         {
-            workedTime -= timeToCompletion;
-
-            // Create Packet !
+            CoreType = CoreType.MINING;
+            CoreSpeed = speed;
         }
-        return;
-    }
 
-
-    public override void AddToPlayerNewCore()
-    {
-        return; // Must select a currency later
-    }
-
-    public override void RemoveToPlayerOldCore()
-    {
-        RemovePlayerMiningValue(coreSpeed);
-    }
-
-    public override void SpeedUpgrade(float amount)
-    {
-        coreSpeed += amount;
-        AddPlayerMiningValue(amount);
-    }
-
-    void ChangeCurrencyMined(Currency newCurrency)
-    {
-        RemovePlayerMiningValue(coreSpeed);
-        MinedCurrency = newCurrency;
-        AddPlayerMiningValue(coreSpeed);
-    }
-
-    #region Interaction with PlayerData
-    void AddPlayerMiningValue(float amount)
-    {
-        switch(MinedCurrency)
+        public override void Work(float deltaTime)
         {
-            case (Currency.CURRENCY1):
-                ClientPlayer.SpeedCurrency1 += amount;
-                break;
-            case (Currency.CURRENCY2):
-                ClientPlayer.SpeedCurrency2 += amount;
-                break;
-            case (Currency.CURRENCY3):
-                ClientPlayer.SpeedCurrency3 += amount;
-                break;
-            case (Currency.CURRENCY4):
-                ClientPlayer.SpeedCurrency4 += amount;
-                break;
-            case (Currency.CURRENCY5):
-                ClientPlayer.SpeedCurrency5 += amount;
-                break;
-            default:
-                break;
-        }
-        return;
-    }
+            _WorkedTime += deltaTime;
+            if(_WorkedTime >= TimeToCompletion)
+            {
+                _WorkedTime -= TimeToCompletion;
 
-    void RemovePlayerMiningValue(float amount)
-    {
-        AddPlayerMiningValue(-amount);
+                // Create Packet !
+            }
+            return;
+        }
+
+
+        public override void AddToPlayerNewCore()
+        {
+            return; // Must select a currency later
+        }
+
+        public override void RemoveToPlayerOldCore()
+        {
+            ChangePlayerMiningValue(-CoreSpeed);
+        }
+
+        public override void SpeedUpgrade(float amount)
+        {
+            CoreSpeed += amount;
+            ChangePlayerMiningValue(amount);
+        }
+
+        private void ChangeCurrencyMined(Currency newCurrency)
+        {
+            ChangePlayerMiningValue(-CoreSpeed);
+            MinedCurrency = newCurrency;
+            ChangePlayerMiningValue(CoreSpeed);
+        }
+
+        #region Interaction with PlayerData
+
+        private void ChangePlayerMiningValue(float amount)
+        {
+            switch(MinedCurrency)
+            {
+                case (Currency.CURRENCY1):
+                    ClientPlayer.SpeedCurrency1 += amount;
+                    break;
+                case (Currency.CURRENCY2):
+                    ClientPlayer.SpeedCurrency2 += amount;
+                    break;
+                case (Currency.CURRENCY3):
+                    ClientPlayer.SpeedCurrency3 += amount;
+                    break;
+                case (Currency.CURRENCY4):
+                    ClientPlayer.SpeedCurrency4 += amount;
+                    break;
+                case (Currency.CURRENCY5):
+                    ClientPlayer.SpeedCurrency5 += amount;
+                    break;
+                default:
+                    break;
+            }
+            return;
+        }
+        #endregion
     }
-    #endregion
 }

@@ -1,21 +1,20 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
 using UnityEngine;
-using static Statics;
 
-public class GameManager : MonoBehaviour
+namespace Assets.Scripts.Managers
 {
-    public static float TimeSinceStart = 0f;
-    // Start is called before the first frame update
-    void Start()
+    public class GameManager : MonoBehaviour
     {
-        //ClientPlayer = new PlayerData();
-    }
+        public static float TimeSinceStart = 0f;
+        // Start is called before the first frame update
+        void Start()
+        {
+            //ClientPlayer = new PlayerData();
+        }
 
-    // Update is called once per frame
-    void Update()
-    {
-        TimeSinceStart += Time.deltaTime;
+        // Update is called once per frame
+        void Update()
+        {
+            TimeSinceStart += Time.deltaTime;
+        }
     }
 }

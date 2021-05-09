@@ -1,28 +1,28 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-
-[RequireComponent(typeof(Camera))]
-public class CameraZooming : MonoBehaviour
+namespace Assets.Scripts.Camera
 {
-    Camera camera;
-
-    public float Increment = .1f;
-    // Start is called before the first frame update
-    void Start()
+    [RequireComponent(typeof(UnityEngine.Camera))]
+    public class CameraZooming : MonoBehaviour
     {
-        camera = GetComponent<Camera>();
-    }
+        private UnityEngine.Camera _Camera;
 
-    // Update is called once per frame
-    void Update()
-    {
-        // TODO
-        float input = Input.GetAxis("Mouse ScrollWheel");
-        if (input != 0f)
+        public float Increment = .1f;
+        // Start is called before the first frame update
+        void Start()
         {
-            camera.orthographicSize -= Increment * input;
+            _Camera = GetComponent<UnityEngine.Camera>();
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
+            // TODO
+            float input = Input.GetAxis("Mouse ScrollWheel");
+            if (input != 0f)
+            {
+                _Camera.orthographicSize -= Increment * input;
+            }
         }
     }
 }

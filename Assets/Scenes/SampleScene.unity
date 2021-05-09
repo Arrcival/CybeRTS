@@ -292,12 +292,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b20b6c417427e640af24cd7b9d0625d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Node: {fileID: 2840119040401384413, guid: 0d30d00c7cc55a243981ffc951bbff77, type: 3}
-  LinkHolder: {fileID: 292822261}
+  _Node: {fileID: 2840119040401384413, guid: 0d30d00c7cc55a243981ffc951bbff77, type: 3}
+  _LinkHolder: {fileID: 292822261}
   DistanceMaxForLinks: 2.9
   DistanceBetweenNodes: 2
   NodesWidth: 15
   NodesHeight: 15
+  _Type: 0
 --- !u!4 &756198128
 Transform:
   m_ObjectHideFlags: 0

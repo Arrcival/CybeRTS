@@ -1,24 +1,25 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerManager : MonoBehaviour
+namespace Assets.Scripts.Managers
 {
-    Node SelectedNode = null;
-
-    #region Selecting and deselecting a Node
-    public void SelectNode(Node node)
+    public class PlayerManager : MonoBehaviour
     {
-        UnSelectNode();
+        private Node _SelectedNode = null;
 
-        node.IsSelectedNode = true;
-        SelectedNode = node;
-    }
+        #region Selecting and deselecting a Node
+        public void SelectNode(Node node)
+        {
+            UnSelectNode();
 
-    public void UnSelectNode()
-    {
-        if (SelectedNode != null)
-            SelectedNode.IsSelectedNode = false;
+            node.IsSelectedNode = true;
+            _SelectedNode = node;
+        }
+
+        public void UnSelectNode()
+        {
+            if (_SelectedNode != null)
+                _SelectedNode.IsSelectedNode = false;
+        }
+        #endregion
     }
-    #endregion
 }

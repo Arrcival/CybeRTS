@@ -1,44 +1,46 @@
-using System.Collections;
-using System.Collections.Generic;
+using Assets.Scripts.Interfaces;
 using UnityEngine;
 
-[RequireComponent(typeof(Link), typeof(LineRenderer))]
-public class DrawingLink : MonoBehaviour, ILineDrawable
+namespace Assets.Scripts
 {
-    public float CoeffWidth = .05f;
-
-    Link link;
-    LineRenderer lineRenderer;
-    public void UpdateVisuals()
+    [RequireComponent(typeof(Link), typeof(LineRenderer))]
+    public class DrawingLink : MonoBehaviour, ILineDrawable
     {
-        if(link != null)
+        public float CoefWidth = .05f;
+
+        Link _Link;
+        LineRenderer _LineRenderer;
+        public void UpdateVisuals()
         {
-            Vector3[] points = new Vector3[2];
-            Vector3 direction = link.node2.transform.position - link.node1.transform.position;
+            if(_Link != null)
+            {
+                Vector3[] points = new Vector3[2];
+                Vector3 direction = _Link.Node2.transform.position - _Link.Node1.transform.position;
 
 
-            points[0] = link.node1.transform.position + Vector3.ClampMagnitude(direction, link.node1.FinalRadius);
-            points[1] = link.node2.transform.position + Vector3.ClampMagnitude(-direction, link.node2.FinalRadius);
+                points[0] = _Link.Node1.transform.position + Vector3.ClampMagnitude(direction, _Link.Node1.FinalRadius);
+                points[1] = _Link.Node2.transform.position + Vector3.ClampMagnitude(-direction, _Link.Node2.FinalRadius);
 
-            lineRenderer.startWidth = link.Width * CoeffWidth;
-            lineRenderer.endWidth = link.Width * CoeffWidth;
-            lineRenderer.SetPositions(points);
+                _LineRenderer.startWidth = _Link.Width * CoefWidth;
+                _LineRenderer.endWidth = _Link.Width * CoefWidth;
+                _LineRenderer.SetPositions(points);
+            }
         }
-    }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        link = GetComponent<Link>();
-        lineRenderer = GetComponent<LineRenderer>();
-        lineRenderer.useWorldSpace = false;
+        // Start is called before the first frame update
+        void Start()
+        {
+            _Link = GetComponent<Link>();
+            _LineRenderer = GetComponent<LineRenderer>();
+            _LineRenderer.useWorldSpace = false;
 
-        UpdateVisuals();
-    }
+            UpdateVisuals();
+        }
 
-    // Update is called once per frame
-    void Update()
-    {
+        // Update is called once per frame
+        void Update()
+        {
         
+        }
     }
 }

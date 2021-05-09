@@ -1,150 +1,153 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
 using System.Linq;
-using static Statics;
+using Assets.Scripts.Helpers;
+using Assets.Scripts.Managers;
+using Assets.Scripts.Packets;
+using UnityEngine;
+using static Assets.Scripts.Helpers.Statics;
 
-public class Node : MonoBehaviour
+namespace Assets.Scripts
 {
-    public float FirewallDefense = 5;
-    public float PacketsPerSecond = 1f;
-
-    public Color Color = Color.white;
-
-    // Link, Node, PacketEntryBlocked
-    List<Neighboor> NeighboorNodes = new List<Neighboor>();
-
-    DrawingNode drawable;
-    public int ID;
-
-    public List<(float, Packet, TransfertType)> PacketsHistory = new List<(float, Packet, TransfertType)>();
-    public List<Packet> PacketsToTreat = new List<Packet>();
-    float currentWorkingTime = 0f;
-
-    [ReadOnly] public bool IsSelectedNode = false;
-
-
-    Cores cores;
-    public float FinalRadius
+    public class Node : MonoBehaviour
     {
-        get
-        {
-            if (drawable != null)
-                return FirewallDefense * drawable.SizeCoefficient;
-            return FirewallDefense;
-        }
-    }
+        public float FirewallDefense = 5;
+        public float PacketsPerSecond = 1f;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        drawable = GetComponent<DrawingNode>();
-        cores = new Cores(this);
-    }
+        public Color Color = Color.white;
 
-    // Update is called once per frame
-    void Update()
-    {
-        if(transform.hasChanged)
-        {
-            UpdateVisualNeighboorLines();
-            transform.hasChanged = false;
-        }
+        // Link, Node, PacketEntryBlocked
+        private List<Neighbor> _NeighborNodes = new List<Neighbor>();
 
-        if(PacketsToTreat.Count > 0)
+        DrawingNode _Drawable;
+        public int ID;
+
+        public List<(float, Packet, TransferType)> PacketsHistory = new List<(float, Packet, TransferType)>();
+        public List<Packet> PacketsToTreat = new List<Packet>();
+        private float _CurrentWorkingTime = 0f;
+
+        [ReadOnly] public bool IsSelectedNode = false;
+
+        private Cores.Cores _Cores;
+
+        public float FinalRadius
         {
-            Packet packetToTreat = PacketsToTreat[0]; // Always the first one
-            currentWorkingTime += Time.deltaTime;
-            if(currentWorkingTime >= 1 / PacketsPerSecond)
+            get
             {
-                PacketsToTreat.Remove(packetToTreat);
-                if (packetToTreat.EndingNode.ID == ID)
-                {
-                    packetToTreat.OnReceipt();
-                    PacketsHistory.Add((GameManager.TimeSinceStart, packetToTreat, TransfertType.RECEIPT));
-                } else
-                {
-                    Neighboor group = NeighboorNodes.FirstOrDefault(e => e.Node.ID == packetToTreat.GetNextNodeID(ID));
-                    if(group.Link != null && group.Node != null)
-                    {
-                        if(group.Link.Enabled)
-                        {
-                            // Active Link
-                            group.Node.ReceivePacket(group.Link.name, packetToTreat);
-                        }
-                    } // else the packet die without any other effect
-
-                    PacketsHistory.Add((GameManager.TimeSinceStart, packetToTreat, TransfertType.TRANSFERT));
-                }
-
-                currentWorkingTime -= 1 / PacketsPerSecond;
+                if (_Drawable != null)
+                    return FirewallDefense * _Drawable.SizeCoefficient;
+                return FirewallDefense;
             }
         }
-    }
 
-    public void ReceivePacket(string linkName, Packet newPacket)
-    {
-        if(!NeighboorNodes.Exists(e => e.Link.name == linkName && !e.PacketEntryBlocked))
-            PacketsToTreat.Add(newPacket);
-    }
-
-
-
-    public void TryLinkingToNeighboorNode(Node otherNode, GameObject parentLink, float distanceMax)
-    {
-        if(!NeighboorNodes.Exists(x => x.Node.ID == otherNode.ID))
+        // Start is called before the first frame update
+        void Start()
         {
+            _Drawable = GetComponent<DrawingNode>();
+            _Cores = new Cores.Cores(this);
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
+            if(transform.hasChanged)
+            {
+                UpdateVisualNeighborLines();
+                transform.hasChanged = false;
+            }
+
+            if(PacketsToTreat.Count > 0)
+            {
+                Packet packetToTreat = PacketsToTreat[0]; // Always the first one
+                _CurrentWorkingTime += Time.deltaTime;
+                if(_CurrentWorkingTime >= 1 / PacketsPerSecond)
+                {
+                    PacketsToTreat.Remove(packetToTreat);
+                    if (packetToTreat.EndingNode.ID == ID)
+                    {
+                        packetToTreat.OnReceipt();
+                        PacketsHistory.Add((GameManager.TimeSinceStart, packetToTreat, TransferType.RECEIVED));
+                    } else
+                    {
+                        Neighbor group = _NeighborNodes.FirstOrDefault(e => e.Node.ID == packetToTreat.GetNextNodeID(ID));
+                        if(group.Link != null && group.Node != null)
+                        {
+                            if(group.Link.Enabled)
+                            {
+                                // Active Link
+                                group.Node.ReceivePacket(group.Link.name, packetToTreat);
+                            }
+                        } // else the packet die without any other effect
+
+                        PacketsHistory.Add((GameManager.TimeSinceStart, packetToTreat, TransferType.TRANSFER));
+                    }
+
+                    _CurrentWorkingTime -= 1 / PacketsPerSecond;
+                }
+            }
+        }
+
+        public void ReceivePacket(string linkName, Packet newPacket)
+        {
+            if(!_NeighborNodes.Exists(e => e.Link.name == linkName && !e.PacketEntryBlocked))
+                PacketsToTreat.Add(newPacket);
+        }
+
+
+
+        public void TryLinkingToNeighborNode(Node otherNode, GameObject parentLink, float distanceMax)
+        {
+            if (_NeighborNodes.Exists(x => x.Node.ID == otherNode.ID)) return;
             Vector2 ourPosition = transform.position;
             Vector2 theirPosition = otherNode.transform.position;
             float distance = Vector2.Distance(ourPosition, theirPosition);
             if (distance <= distanceMax)
             {
-                GameObject gameObject = Instantiate(Statics.LineGameobject, parentLink.transform);
+                GameObject gameObject = Instantiate(Statics.LineGameObject, parentLink.transform);
                 gameObject.name = $"Link {ID}-{otherNode.ID}";
                 Link link = gameObject.GetComponent<Link>();
-                link.node1 = this;
-                link.node2 = otherNode;
+                link.Node1 = this;
+                link.Node2 = otherNode;
 
-                NeighboorNodes.Add(new Neighboor(link, otherNode));
-                otherNode.NeighboorNodes.Add(new Neighboor(link, this));
+                _NeighborNodes.Add(new Neighbor(link, otherNode));
+                otherNode._NeighborNodes.Add(new Neighbor(link, this));
             }
         }
-    }
 
-    #region Neighboor class
+        #region Neighbor class
 
-    public class Neighboor
-    {
-        public Link Link;
-        public Node Node;
-        public bool PacketEntryBlocked;
-
-        public Neighboor(Link aLink, Node anode, bool firewallBlocked = false)
+        public class Neighbor
         {
-            Link = aLink; Node = anode; PacketEntryBlocked = firewallBlocked;
+            public Link Link;
+            public Node Node;
+            public bool PacketEntryBlocked;
+
+            public Neighbor(Link aLink, Node anode, bool firewallBlocked = false)
+            {
+                Link = aLink; Node = anode; PacketEntryBlocked = firewallBlocked;
+            }
         }
+
+        #endregion
+
+
+        #region Update Visuals for node changes
+
+        void UpdateVisualNeighborLines()
+        {
+            for(int i = 0; i < _NeighborNodes.Count; i++)
+                _NeighborNodes[i].Link.UpdateVisuals();
+        }
+        void UpdateVisuals()
+        {
+            if (_Drawable != null)
+                _Drawable.UpdateVisuals();
+        }
+
+        private void OnValidate()
+        {
+            UpdateVisualNeighborLines();
+            UpdateVisuals();
+        }
+        #endregion
     }
-
-    #endregion
-
-
-    #region Update Visuals for node changes
-
-    void UpdateVisualNeighboorLines()
-    {
-        for(int i = 0; i < NeighboorNodes.Count; i++)
-            NeighboorNodes[i].Link.UpdateVisuals();
-    }
-    void UpdateVisuals()
-    {
-        if (drawable != null)
-            drawable.UpdateVisuals();
-    }
-
-    private void OnValidate()
-    {
-        UpdateVisualNeighboorLines();
-        UpdateVisuals();
-    }
-    #endregion
 }

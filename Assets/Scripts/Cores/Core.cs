@@ -1,21 +1,21 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using static Statics;
+using static Assets.Scripts.Helpers.Statics;
 
-public abstract class Core
+namespace Assets.Scripts.Cores
 {
-    public CoreType coreType;
-    public float coreSpeed;
-    Node node;
-
-    public Core(Node nodeReference)
+    public abstract class Core
     {
-        node = nodeReference;
-    }
-    public abstract void RemoveToPlayerOldCore();
-    public abstract void AddToPlayerNewCore();
-    public abstract void SpeedUpgrade(float amount);
-    public abstract void Work(float deltaTime);
+        public CoreType CoreType;
+        public float CoreSpeed;
+        private Node _Node;
 
+        public Core(Node nodeReference)
+        {
+            _Node = nodeReference;
+        }
+        public abstract void RemoveToPlayerOldCore();
+        public abstract void AddToPlayerNewCore();
+        public abstract void SpeedUpgrade(float amount);
+        public abstract void Work(float deltaTime);
+
+    }
 }

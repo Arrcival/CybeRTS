@@ -1,27 +1,28 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
-public abstract class Packet
+namespace Assets.Scripts.Packets
 {
-    public List<Node> Path = new List<Node>();
-    public Node StartingNode;
-    public Node EndingNode;
-
-    public Packet(Node startingNode, Node endingNode, List<Node> path)
+    public abstract class Packet
     {
-        StartingNode = startingNode;
-        EndingNode = endingNode;
-        Path = path;
-    }
+        public List<Node> Path;
+        public Node StartingNode;
+        public Node EndingNode;
 
-    public int GetNextNodeID(int NodeID)
-    {
-        for (int i = 0; i < Path.Count - 1; i++)
-            if (Path[i].ID == NodeID)
-                return Path[i + 1].ID;
-        return -1;
-    }
+        public Packet(Node startingNode, Node endingNode, List<Node> path)
+        {
+            StartingNode = startingNode;
+            EndingNode = endingNode;
+            Path = path;
+        }
 
-    public abstract void OnReceipt();
+        public int GetNextNodeID(int nodeID)
+        {
+            for (int i = 0; i < Path.Count - 1; i++)
+                if (Path[i].ID == nodeID)
+                    return Path[i + 1].ID;
+            return -1;
+        }
+
+        public abstract void OnReceipt();
+    }
 }

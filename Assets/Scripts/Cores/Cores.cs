@@ -1,59 +1,57 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using System;
-using static Statics;
+using static Assets.Scripts.Helpers.Statics;
 
-public class Cores
+namespace Assets.Scripts.Cores
 {
-    public Core[] cores = new Core[MAX_CORES];
-    float cores_speed = DEFAULT_CPU_SPEED;
-
-    Node node;
-
-    public Cores(Node nodeRef)
+    public class Cores
     {
-        node = nodeRef;
-        for (int i = 0; i < DEFAULT_CORES; i++)
-            cores[i] = new CoreEmpty(nodeRef);
-        for (int i = DEFAULT_CORES; i <= MAX_CORES - DEFAULT_CORES; i++)
-            cores[i] = new CoreUnavaible(nodeRef);
-    }
+        private Core[] _Cores = new Core[MAX_CORES];
+        float _CoresSpeed = DEFAULT_CPU_SPEED;
 
-    public void WorkTime(float deltaTime)
-    {
-        Array.ForEach(cores, c => c.Work(deltaTime));
-    }
+        private Node _Node;
 
-    public void SetCore(int coreID, CoreType type)
-    {
-        if(coreID >= 0 && coreID <= MAX_CORES)
+        public Cores(Node nodeRef)
         {
-            CoreType selectedType = cores[coreID].coreType;
-            if(selectedType != CoreType.UNAVAIBLE)
+            _Node = nodeRef;
+            for (int i = 0; i < DEFAULT_CORES; i++)
+                _Cores[i] = new CoreEmpty(nodeRef);
+            for (int i = DEFAULT_CORES; i <= MAX_CORES - DEFAULT_CORES; i++)
+                _Cores[i] = new CoreUnavailable(nodeRef);
+        }
+
+        public void WorkTime(float deltaTime)
+        {
+            Array.ForEach(_Cores, c => c.Work(deltaTime));
+        }
+
+        public void SetCore(int coreID, CoreType type)
+        {
+            if (coreID < 0 || coreID > MAX_CORES) return;
+
+            CoreType selectedType = _Cores[coreID].CoreType;
+            if (selectedType == CoreType.UNAVAILABLE) return;
+
+            _Cores[coreID].RemoveToPlayerOldCore();
+            Core newCore = CreateCoreByType(type);
+            _Cores[coreID] = newCore;
+        }
+
+        public Core CreateCoreByType(CoreType type)
+        {
+            switch(type)
             {
-                cores[coreID].RemoveToPlayerOldCore();
-                Core newCore = CreateCoreByType(type);
-                cores[coreID] = newCore;
+                case (CoreType.MINING):
+                    return new CoreMining(_Node, _CoresSpeed);
+                default:
+                    return new CoreEmpty(_Node);
             }
         }
-    }
 
-    public Core CreateCoreByType(CoreType type)
-    {
-        switch(type)
+        public void SpeedUpgrade(float upgradeAmount)
         {
-            case (CoreType.MINING):
-                return new CoreMining(node, cores_speed);
-            default:
-                return new CoreEmpty(node);
+            _CoresSpeed += upgradeAmount;
+            for (int i = 0; i < _Cores.Length; i++)
+                _Cores[i].SpeedUpgrade(upgradeAmount);
         }
-    }
-
-    public void SpeedUpgrade(float upgradeAmount)
-    {
-        cores_speed += upgradeAmount;
-        for (int i = 0; i < cores.Length; i++)
-            cores[i].SpeedUpgrade(upgradeAmount);
     }
 }

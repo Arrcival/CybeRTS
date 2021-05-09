@@ -1,48 +1,48 @@
-using System.Collections;
-using System.Collections.Generic;
+using Assets.Scripts.Interfaces;
 using UnityEngine;
 
-
-[RequireComponent(typeof(Node), typeof(LineRenderer), typeof(CircleCollider2D))]
-public class DrawingNode : MonoBehaviour, ILineDrawable
+namespace Assets.Scripts
 {
-
-    LineRenderer lineRenderer;
-    Node node;
-
-    public float SizeCoefficient = 0.2f;
-    public float LineWidth = .05f;
-
-    CircleCollider2D collider2D;
-    // Start is called before the first frame update
-    void Start()
+    [RequireComponent(typeof(Node), typeof(LineRenderer), typeof(CircleCollider2D))]
+    public class DrawingNode : MonoBehaviour, ILineDrawable
     {
-        lineRenderer = GetComponent<LineRenderer>();
-        node = GetComponent<Node>();
-        collider2D = GetComponent<CircleCollider2D>();
-        UpdateVisuals();
-    }
+        private LineRenderer _LineRenderer;
+        private Node _Node;
 
-    public void UpdateVisuals()
-    {
-        if(lineRenderer != null)
+        public float SizeCoefficient = 0.2f;
+        public float LineWidth = .05f;
+
+        private CircleCollider2D _Collider2D;
+        // Start is called before the first frame update
+        void Start()
         {
-            lineRenderer.DrawCircle(node.FirewallDefense * SizeCoefficient, LineWidth, transform.position);
-            lineRenderer.SetGradientLine(node.Color);
+            _LineRenderer = GetComponent<LineRenderer>();
+            _Node = GetComponent<Node>();
+            _Collider2D = GetComponent<CircleCollider2D>();
+            UpdateVisuals();
         }
-        if(collider2D != null)
-            collider2D.radius = node.FinalRadius + LineWidth;
 
-    }
+        public void UpdateVisuals()
+        {
+            if(_LineRenderer != null)
+            {
+                _LineRenderer.DrawCircle(_Node.FirewallDefense * SizeCoefficient, LineWidth, transform.position);
+                _LineRenderer.SetGradientLine(_Node.Color);
+            }
+            if(_Collider2D != null)
+                _Collider2D.radius = _Node.FinalRadius + LineWidth;
 
-    // Update is called once per frame
-    void Update()
-    {
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
         
-    }
+        }
 
-    private void OnValidate()
-    {
-        UpdateVisuals();
+        private void OnValidate()
+        {
+            UpdateVisuals();
+        }
     }
 }

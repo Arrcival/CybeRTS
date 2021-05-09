@@ -1,31 +1,31 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using static Statics;
+using static Assets.Scripts.Helpers.Statics;
 
-public class CoreEmpty : Core
+namespace Assets.Scripts.Cores
 {
-    public CoreEmpty(Node node) : base(node)
+    public class CoreEmpty : Core
     {
-        coreType = CoreType.EMPTY;
-    }
+        public CoreEmpty(Node node) : base(node)
+        {
+            CoreType = CoreType.EMPTY;
+        }
 
-    public override void AddToPlayerNewCore()
-    {
-        return;
-    }
+        public override void AddToPlayerNewCore()
+        {
+            return;
+        }
 
-    public override void RemoveToPlayerOldCore()
-    {
-        return;
-    }
+        public override void RemoveToPlayerOldCore()
+        {
+            return;
+        }
 
-    public override void SpeedUpgrade(float amount)
-    {
-        return;
-    }
-    public override void Work(float deltaTime)
-    {
-        return;
+        public override void SpeedUpgrade(float amount)
+        {
+            return;
+        }
+        public override void Work(float deltaTime)
+        {
+            return;
+        }
     }
 }
