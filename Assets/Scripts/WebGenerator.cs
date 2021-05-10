@@ -69,7 +69,7 @@ namespace Assets.Scripts
                 goNode.name = $"Node {i}";
                 Node node = goNode.GetComponent<Node>();
                 node.ID = i;
-                node.FirewallDefense = Random.Range(4, 9);
+                node.WidthDebug = Random.Range(4, 9);
                 nodes[i] = node;
             }
 
@@ -91,7 +91,7 @@ namespace Assets.Scripts
                 goNode.gameObject.name = $"Node {i}";
                 Node node = goNode.GetComponent<Node>();
                 node.ID = i;
-                node.FirewallDefense = 4;
+                node.WidthDebug = 4;
                 nodes[i] = node;
                 Debug.Log(i + " " + nodes.Length);
                 if (i > 0)

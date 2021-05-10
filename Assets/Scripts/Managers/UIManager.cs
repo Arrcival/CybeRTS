@@ -27,7 +27,7 @@ namespace Assets.Scripts.Managers
 
         void UpdateUI()
         {
-            NodeName.text = _node.name;
+            UpdateNameAndHP();
             UpdatePacketHistory();
             UpdateCores();
             SetVisibility(true);
@@ -48,6 +48,17 @@ namespace Assets.Scripts.Managers
             CoresDisplay.enabled = enable;
         }
 
+        #region Public methods
+        public void UpdateNameAndHP()
+        {
+            string txt = $"{_node.name}";
+            if (!_node.PlayerControlled)
+                txt += $" - { _node._HP}/{ _node._HPmax} HP";
+            else
+                txt += " - Capturée";
+            NodeName.text = txt;
+        }
+
         public void UpdatePacketHistory()
         {
             PacketHistory.text = "";
@@ -59,18 +70,20 @@ namespace Assets.Scripts.Managers
             for (int i = 0; i < Mathf.Min(PacketsShownInHistory, packetHistory.Count); i++)
             {
                 double time = Math.Round((double)packetHistory[i].Item1, 2);
+                PacketHistory.text += $"{time}s : {packetHistory[i].Item2.GetNameType()} Packet ";
                 switch (packetHistory[i].Item3)
                 {
                     case (TransferType.SENT):
-                        PacketHistory.text += $"{time}s : Packet sent" + Environment.NewLine;
+                        PacketHistory.text += "sent" + Environment.NewLine;
                         break;
                     case (TransferType.RECEIVED):
-                        PacketHistory.text += $"{time}s : Packet received !" + Environment.NewLine;
+                        PacketHistory.text += "received !" + Environment.NewLine;
                         break;
                     case (TransferType.TRANSFER):
-                        PacketHistory.text += $"{time}s : Packet transfered" + Environment.NewLine;
+                        PacketHistory.text += "transfered" + Environment.NewLine;
                         break;
                     default:
+                        PacketHistory.text += Environment.NewLine;
                         break;
                 }
             }
@@ -101,5 +114,6 @@ namespace Assets.Scripts.Managers
             else
                 ClearUI();
         }
+        #endregion
     }
 }

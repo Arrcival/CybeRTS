@@ -11,6 +11,11 @@ namespace Assets.Scripts.Helpers
         public static readonly int MAX_CORES = 8;
         public static readonly float DEFAULT_CPU_SPEED = 1f;
 
+
+        public static float SIZE_TREATED_PER_SECONDS = 2f;
+
+        public static float RAW_HP = 100f;
+
         public static PlayerData ClientPlayer;
 
         public static UIManager UIManager;

@@ -10,9 +10,8 @@ namespace Assets.Scripts
 {
     public class Node : MonoBehaviour
     {
-        public float FirewallDefense = 5;
-        public float PacketsPerSecond = 1f;
 
+        public float WidthDebug = 4f;
         public Color Color = Color.white;
 
         // Link, Node, PacketEntryBlocked
@@ -25,23 +24,31 @@ namespace Assets.Scripts
         public List<Packet> PacketsToTreat = new List<Packet>();
         private float _CurrentWorkingTime = 0f;
 
-        [ReadOnly] public bool IsSelectedNode = false;
-
         public Cores.Cores Cores;
+
+        [ReadOnly] public bool IsSelectedNode = false;
+        [ReadOnly] public bool PlayerControlled = false;
+        [ReadOnly] public float _HP = 0f;
+        [ReadOnly] public float _HPmax = 0f;
+        [ReadOnly] public float Defense = 0f;
+
+
 
         public float FinalRadius
         {
             get
             {
                 if (_Drawable != null)
-                    return FirewallDefense * _Drawable.SizeCoefficient;
-                return FirewallDefense;
+                    return WidthDebug * _Drawable.SizeCoefficient;
+                return WidthDebug;
             }
         }
 
         // Start is called before the first frame update
         void Start()
         {
+            _HPmax += RAW_HP;
+            _HP = _HPmax;
             _Drawable = GetComponent<DrawingNode>();
             Cores = new Cores.Cores(this);
 
@@ -49,7 +56,7 @@ namespace Assets.Scripts
             // DEBUGGING
             if(ID == 0)
                 for (int i = 0; i < 100; i++)
-                    PacketsToTreat.Add(new DDoSPacket(new List<Node> { this, _NeighborNodes[0].Node }));
+                    PacketsToTreat.Add(new AttackPacket(new List<Node> { this, _NeighborNodes[0].Node }, 1f, 5f));
             
         }
 
@@ -67,12 +74,12 @@ namespace Assets.Scripts
             {
                 Packet packetToTreat = PacketsToTreat[0]; // Always the first one
                 _CurrentWorkingTime += Time.deltaTime;
-                if(_CurrentWorkingTime >= 1 / PacketsPerSecond)
+                if(_CurrentWorkingTime >= packetToTreat.Size / SIZE_TREATED_PER_SECONDS)
                 {
                     PacketsToTreat.Remove(packetToTreat);
                     if (packetToTreat.EndingNode.ID == ID)
                     {
-                        packetToTreat.OnReceipt();
+                        packetToTreat.OnReceive(this);
                         LogPacket(packetToTreat, TransferType.RECEIVED);
                     } else
                     {
@@ -91,8 +98,7 @@ namespace Assets.Scripts
                         else
                             LogPacket(packetToTreat, TransferType.TRANSFER);
                     }
-
-                    _CurrentWorkingTime -= 1 / PacketsPerSecond;
+                    _CurrentWorkingTime -= packetToTreat.Size / SIZE_TREATED_PER_SECONDS;
                 }
             }
             #endregion
@@ -100,6 +106,28 @@ namespace Assets.Scripts
 
         }
 
+        public void DealDamage(float damageReceived)
+        {
+            if(!PlayerControlled)
+            {
+                float totalDamage = Mathf.Max(damageReceived - Defense, 0f);
+                if (totalDamage > 0f)
+                {
+                    _HP -= totalDamage;
+                    if (_HP <= 0)
+                    {
+                        _HP = _HPmax; // we don't care as you can't lose control ?
+                        PlayerControlled = true;
+                    }
+                    if (IsSelectedNode)
+                        Statics.UIManager.UpdateNameAndHP();
+
+                }
+            }
+            // else weird, shouldn't happen
+        }
+
+        #region Packet methods
         public void ReceivePacket(string linkName, Packet newPacket)
         {
             if(_NeighborNodes.Exists(e => e.Link.name == linkName && !e.PacketEntryBlocked))
@@ -117,7 +145,7 @@ namespace Assets.Scripts
                 Statics.UIManager.UpdatePacketHistory();
             }
         }
-
+        #endregion
 
         public void TryLinkingToNeighborNode(Node otherNode, GameObject parentLink, float distanceMax)
         {

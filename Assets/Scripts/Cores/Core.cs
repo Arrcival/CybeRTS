@@ -6,7 +6,7 @@ namespace Assets.Scripts.Cores
     {
         public CoreType CoreType;
         public float CoreSpeed;
-        private Node _Node;
+        protected Node _Node;
 
         public Core(Node nodeReference)
         {
@@ -14,7 +14,10 @@ namespace Assets.Scripts.Cores
         }
         public abstract void RemoveToPlayerOldCore();
         public abstract void AddToPlayerNewCore();
-        public abstract void SpeedUpgrade(float amount);
+        public virtual void SpeedUpgrade(float amount)
+        {
+            CoreSpeed += amount;
+        }
         public abstract void Work(float deltaTime);
 
     }

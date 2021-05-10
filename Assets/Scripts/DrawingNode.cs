@@ -26,7 +26,7 @@ namespace Assets.Scripts
         {
             if(_LineRenderer != null)
             {
-                _LineRenderer.DrawCircle(_Node.FirewallDefense * SizeCoefficient, LineWidth, transform.position);
+                _LineRenderer.DrawCircle(_Node.FinalRadius, LineWidth, transform.position);
                 _LineRenderer.SetGradientLine(_Node.Color);
             }
             if(_Collider2D != null)

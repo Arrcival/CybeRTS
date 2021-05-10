@@ -39,7 +39,7 @@ namespace Assets.Scripts.Cores
 
         public override void SpeedUpgrade(float amount)
         {
-            CoreSpeed += amount;
+            base.SpeedUpgrade(amount);
             ChangePlayerMiningValue(amount);
         }
 

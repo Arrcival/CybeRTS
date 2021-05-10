@@ -9,18 +9,13 @@ namespace Assets.Scripts.Packets
         public Node StartingNode;
         public Node EndingNode;
 
-        public Packet(List<Node> path)
+        public float Size;
+        public Packet(List<Node> path, float size)
         {
             StartingNode = path.First();
             EndingNode = path.Last();
             Path = path;
-        }
-
-        public Packet(Node startingNode, Node endingNode, List<Node> path)
-        {
-            StartingNode = startingNode;
-            EndingNode = endingNode;
-            Path = path;
+            Size = size;
         }
 
         public int GetNextNodeID(int nodeID)
@@ -31,6 +26,8 @@ namespace Assets.Scripts.Packets
             return -1;
         }
 
-        public abstract void OnReceipt();
+        public abstract void OnReceive(Node nodeReceiving);
+
+        public abstract string GetNameType();
     }
 }
