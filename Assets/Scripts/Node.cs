@@ -32,6 +32,10 @@ namespace Assets.Scripts
         [ReadOnly] public float _HPmax = 0f;
         [ReadOnly] public float Defense = 0f;
 
+        public bool IsBankNode = false; // Receives currency packets, is invicible (can not be captured)
+
+        float TimeSinceLastHit = 0f;
+
 
 
         public float FinalRadius
@@ -55,8 +59,11 @@ namespace Assets.Scripts
 
             // DEBUGGING
             if(ID == 0)
+            {
+                _NeighborNodes[0].Node.BecomeCurrencyNode();
                 for (int i = 0; i < 100; i++)
-                    PacketsToTreat.Add(new AttackPacket(new List<Node> { this, _NeighborNodes[0].Node }, 1f, 5f));
+                    PacketsToTreat.Add(new CurrencyPacket(new List<Node> { this, _NeighborNodes[0].Node }, 1f, 1 / Mathf.PI * Random.Range(0f, 1f), GetRandomCurrencyType()));
+            }
             
         }
 
@@ -103,12 +110,25 @@ namespace Assets.Scripts
             }
             #endregion
 
+            #region Passive regenration
+            if (!PlayerControlled && !IsFullLife())
+            {
+                TimeSinceLastHit += Time.deltaTime;
+                if (TimeSinceLastHit >= TIME_FOR_FULL_REGEN)
+                {
+                    _HP = _HPmax;
+                    if(IsSelectedNode)
+                        Statics.UIManager.UpdateNameAndHP();
+                }
+            }
+            #endregion
 
         }
 
-        public void DealDamage(float damageReceived)
+        #region About attacks
+        public void DealDamage(float damageReceived, Packet attackingPacket)
         {
-            if(!PlayerControlled)
+            if(!PlayerControlled && !IsBankNode)
             {
                 float totalDamage = Mathf.Max(damageReceived - Defense, 0f);
                 if (totalDamage > 0f)
@@ -118,14 +138,20 @@ namespace Assets.Scripts
                     {
                         _HP = _HPmax; // we don't care as you can't lose control ?
                         PlayerControlled = true;
+                        attackingPacket.OnCapture();
                     }
                     if (IsSelectedNode)
                         Statics.UIManager.UpdateNameAndHP();
-
                 }
+                TimeSinceLastHit = 0f;
             }
             // else weird, shouldn't happen
         }
+        bool IsFullLife()
+        {
+            return _HP == _HPmax;
+        }
+#endregion
 
         #region Packet methods
         public void ReceivePacket(string linkName, Packet newPacket)
@@ -199,6 +225,13 @@ namespace Assets.Scripts
         private void OnValidate()
         {
             UpdateVisualNeighborLines();
+            UpdateVisuals();
+        }
+
+        public void BecomeCurrencyNode()
+        {
+            IsBankNode = true;
+            Color = Color.yellow;
             UpdateVisuals();
         }
         #endregion

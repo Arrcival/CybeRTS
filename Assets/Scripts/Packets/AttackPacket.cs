@@ -13,7 +13,7 @@ namespace Assets.Scripts.Packets
         }
         public override void OnReceive(Node nodeReceiving)
         {
-            nodeReceiving.DealDamage(Damages);
+            nodeReceiving.DealDamage(Damages, this);
         }
 
         public override string GetNameType()

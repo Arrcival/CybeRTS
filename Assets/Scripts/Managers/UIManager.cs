@@ -18,6 +18,12 @@ namespace Assets.Scripts.Managers
         [SerializeField] public Text PacketHistory;
         [SerializeField] public Text CoresDisplay;
 
+        [SerializeField] public Text Currency1Text;
+        [SerializeField] public Text Currency2Text;
+        [SerializeField] public Text Currency3Text;
+        [SerializeField] public Text Currency4Text;
+        [SerializeField] public Text Currency5Text;
+
         Node _node;
 
         private void Start()
@@ -30,6 +36,7 @@ namespace Assets.Scripts.Managers
             UpdateNameAndHP();
             UpdatePacketHistory();
             UpdateCores();
+            UpdateCurrencies();
             SetVisibility(true);
         }
 
@@ -49,6 +56,15 @@ namespace Assets.Scripts.Managers
         }
 
         #region Public methods
+
+        public void UpdateCurrencies()
+        {
+            Currency1Text.text = Math.Round(ClientPlayer.Currency1, 2).ToString();
+            Currency2Text.text = Math.Round(ClientPlayer.Currency2, 2).ToString();
+            Currency3Text.text = Math.Round(ClientPlayer.Currency3, 2).ToString();
+            Currency4Text.text = Math.Round(ClientPlayer.Currency4, 2).ToString();
+            Currency5Text.text = Math.Round(ClientPlayer.Currency5, 2).ToString();
+        }
         public void UpdateNameAndHP()
         {
             string txt = $"{_node.name}";

@@ -1,3 +1,4 @@
+using Assets.Scripts.Helpers;
 using UnityEngine;
 
 namespace Assets.Scripts.Managers
@@ -8,7 +9,7 @@ namespace Assets.Scripts.Managers
         // Start is called before the first frame update
         void Start()
         {
-            //ClientPlayer = new PlayerData();
+            Statics.ClientPlayer = new PlayerData();
         }
 
         // Update is called once per frame

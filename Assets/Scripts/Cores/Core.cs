@@ -14,10 +14,7 @@ namespace Assets.Scripts.Cores
         }
         public abstract void RemoveToPlayerOldCore();
         public abstract void AddToPlayerNewCore();
-        public virtual void SpeedUpgrade(float amount)
-        {
-            CoreSpeed += amount;
-        }
+        public abstract void SpeedUpgrade(float amount);
         public abstract void Work(float deltaTime);
 
     }

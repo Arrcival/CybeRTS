@@ -1,43 +1,37 @@
+using Assets.Scripts;
+using Assets.Scripts.Cores;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using static Assets.Scripts.Helpers.Statics;
 
 namespace Assets.Scripts.Cores
 {
-    public class CoreFirewall : Core
+    public class CoreAnalyzer : Core
     {
-        const float BASE_HP = 100f;
-        public CoreFirewall(Node node, float speed) : base(node)
+        public CoreAnalyzer(Node node, float speed) : base(node)
         {
             CoreSpeed = speed;
         }
-
         public override void AddToPlayerNewCore()
         {
-            _Node._HPmax += BASE_HP * CoreSpeed;
-            _Node.Defense++;
+            ClientPlayer.PacketAnalyzeSpeed += CoreSpeed;
         }
 
         public override void RemoveToPlayerOldCore()
         {
-            _Node._HPmax -= BASE_HP * CoreSpeed;
-            if (_Node._HPmax < _Node._HP)
-                _Node._HP = _Node._HPmax;
-            _Node.Defense--;
+            ClientPlayer.PacketAnalyzeSpeed -= CoreSpeed;
         }
 
         public override void SpeedUpgrade(float amount)
         {
             CoreSpeed += amount;
-            _Node._HPmax += BASE_HP * amount;
+            ClientPlayer.PacketAnalyzeSpeed += amount;
         }
 
         public override void Work(float deltaTime)
         {
             return;
         }
-
     }
 }
-

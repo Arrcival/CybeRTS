@@ -28,6 +28,11 @@ namespace Assets.Scripts.Packets
 
         public abstract void OnReceive(Node nodeReceiving);
 
+        public virtual void OnCapture()
+        {
+            return; // For future viruses behaviors
+        }
+
         public abstract string GetNameType();
     }
 }

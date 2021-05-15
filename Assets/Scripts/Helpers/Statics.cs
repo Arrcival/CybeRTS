@@ -16,6 +16,8 @@ namespace Assets.Scripts.Helpers
 
         public static float RAW_HP = 100f;
 
+        public static float TIME_FOR_FULL_REGEN = 5f;
+
         public static PlayerData ClientPlayer;
 
         public static UIManager UIManager;
@@ -56,6 +58,18 @@ namespace Assets.Scripts.Helpers
         public enum Currency
         {
             CURRENCY1, CURRENCY2, CURRENCY3, CURRENCY4, CURRENCY5
+        }
+
+
+        // Debug
+        public static Currency GetRandomCurrencyType()
+        {
+            float nb = Random.Range(1, 6); // int is exclusive
+            if (nb == 1) return Currency.CURRENCY1;
+            if (nb == 2) return Currency.CURRENCY2;
+            if (nb == 3) return Currency.CURRENCY3;
+            if (nb == 4) return Currency.CURRENCY4;
+            return Currency.CURRENCY5;
         }
     }
 }
